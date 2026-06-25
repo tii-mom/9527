@@ -1,1 +1,25 @@
-async function getItems(){try{const r=await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL||"http://localhost:3000"}/v1/shop/items`,{cache:"no-store"});return (await r.json()).data.items}catch{return[]}}export default async function Rewards(){const items=await getItems();return <main><h1>Rewards shop</h1><ul>{items.map((i:any)=><li key={i.id}><b>{i.name}</b> — {i.pointsPrice} pts {i.requiresReview?"(manual review)":""}<p>{i.description}</p></li>)}</ul></main>}
+async function getItems() {
+  try {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000"}/v1/shop/items`, { cache: "no-store" });
+    return (await response.json()).data.items;
+  } catch {
+    return [];
+  }
+}
+
+export default async function Rewards() {
+  const items = await getItems();
+  return (
+    <main>
+      <h1>Rewards shop</h1>
+      <ul>
+        {items.map((item: any) => (
+          <li key={item.id}>
+            <b>{item.name}</b> — {item.pointsPrice} pts {item.requiresReview ? "(manual review)" : ""}
+            <p>{item.description}</p>
+          </li>
+        ))}
+      </ul>
+    </main>
+  );
+}
