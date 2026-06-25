@@ -1,0 +1,5 @@
+import { PrismaClient } from "@prisma/client";const prisma=new PrismaClient();
+await prisma.campaign.upsert({where:{id:"camp_neon"},update:{},create:{id:"camp_neon",sponsorName:"Neon",headline:"Serverless Postgres for AI apps",body:"Claim free dev credits.",targetUrl:"https://neon.tech",rewardPoints:8,status:"active"}});
+const items=[{id:"item_model_100k",category:"models",name:"100K model tokens",description:"Manual delivery model token credit.",pointsPrice:1000,deliveryType:"code",requiresReview:false},{id:"item_ai_coding_credit",category:"tools",name:"AI coding credit",description:"Credit for AI coding tools.",pointsPrice:2000,deliveryType:"manual",requiresReview:false},{id:"item_usdc_waitlist",category:"crypto_waitlist",name:"USDC payout waitlist",description:"Waitlist/manual review only. Points are not money or fixed USD value.",pointsPrice:10000,deliveryType:"waitlist",requiresReview:true,requiresWallet:true}];
+for(const item of items) await prisma.shopItem.upsert({where:{id:item.id},update:{},create:{...item,status:"active"}});
+await prisma.$disconnect();console.log("Seeded Neon campaign and shop items.");

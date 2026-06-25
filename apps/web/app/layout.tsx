@@ -1,0 +1,1 @@
+export const metadata={title:"9527",description:"Earn developer credits while your AI agent is thinking."};export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en"><body style={{fontFamily:"system-ui",maxWidth:960,margin:"40px auto",padding:"0 20px"}}>{children}</body></html>}
