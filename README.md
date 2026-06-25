@@ -58,3 +58,41 @@ CLI 命令：9527
 npm 包名：暂定 9527 或 @9527/cli
 积分名：9527 Points / Dev Points，最终可后置决定
 ```
+
+## MVP local development
+
+```bash
+pnpm install
+cp .env.example .env
+pnpm db:push
+pnpm db:seed
+pnpm dev
+```
+
+API runs on `http://localhost:3000`; Web/Admin runs on `http://localhost:3001`.
+
+### CLI local test
+
+```bash
+pnpm --filter @9527/cli build
+node packages/cli/dist/index.js init
+node packages/cli/dist/index.js run -- sleep 10
+node packages/cli/dist/index.js balance
+node packages/cli/dist/index.js shop
+node packages/cli/dist/index.js redeem item_model_100k --email dev@example.com
+```
+
+The CLI stores config at `~/.9527/config.json`, disables sponsor cards in CI, and never runs ad logic during package install.
+
+### Manual MVP smoke test
+
+After `pnpm install`, `pnpm db:push`, `pnpm db:seed`, `pnpm build`, and `pnpm dev`, run:
+
+```bash
+node scripts/manual-smoke.mjs
+node packages/cli/dist/index.js run -- sleep 10
+# Press v, open the printed /a/:sessionId?ct=... landing URL, wait 20s, complete.
+node packages/cli/dist/index.js balance
+node packages/cli/dist/index.js shop
+node packages/cli/dist/index.js redeem item_model_100k --email dev@example.com
+```
