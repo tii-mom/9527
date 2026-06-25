@@ -8,10 +8,25 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: 9527
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     env:
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/9527?schema=public
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3000
       ADMIN_TOKEN: dev-admin-token
+      WEB_BASE_URL: http://localhost:3001
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -23,3 +38,5 @@ jobs:
       - run: pnpm install --frozen-lockfile=false
       - run: pnpm build
       - run: pnpm typecheck
+      - run: pnpm db:push
+      - run: pnpm db:seed

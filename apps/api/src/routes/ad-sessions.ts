@@ -1,5 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { FastifyInstance, FastifyRequest } from "fastify";
+import type { AdSession } from "@prisma/client";
 import { prisma } from "../db/prisma.js";
 import { generateClaimToken, requireUser, requestIp } from "../services/auth.js";
 import { completeAdSession, hashIp } from "../services/reward-engine.js";
@@ -9,7 +10,10 @@ function claimToken(req: FastifyRequest) {
   return req.headers["x-9527-claim-token"]?.toString();
 }
 
-async function authorizeSession(req: FastifyRequest, sessionId: string) {
+async function authorizeSession(
+  req: FastifyRequest,
+  sessionId: string,
+): Promise<{ session?: AdSession; error?: { status: number; code: "NOT_FOUND" | "FORBIDDEN"; message: string } }> {
   const session = await prisma.adSession.findUnique({ where: { id: sessionId } });
   if (!session) return { error: { status: 404, code: "NOT_FOUND" as const, message: "Session not found" } };
   const user = await requireUser(req);
@@ -44,7 +48,7 @@ export async function adSessionRoutes(app: FastifyInstance) {
         context: body.context,
         expiresAt: new Date(Date.now() + 30 * 60 * 1000),
         ipHash: hashIp(requestIp(req)),
-        userAgent: req.headers["user-agent"],
+        userAgent: Array.isArray(req.headers["user-agent"]) ? req.headers["user-agent"][0] : req.headers["user-agent"],
       },
     });
     const landingUrl = `${process.env.WEB_BASE_URL || "http://localhost:3001"}/a/${session.id}?ct=${encodeURIComponent(token)}`;
